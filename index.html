@@ -13,38 +13,38 @@
 
 <body>
 
+    <div class="container">
+        <!-- テキストを入力した付箋を出力するエリア -->
+        <div id="stickyNote__container">
 
 
+        </div><!-- /#stickyNote__container -->
+
+        <div class="status__area">
+            <p id="status">今日の気づきをメモしましょー</p>
+        </div><!-- /.status__area -->
+
+        <!-- 付箋へのテキスト入力のボタン -->
+        <div id="stickyNote__input">
+            <h3>今日の気づきを一言でいえば？</h3>
+            <input type="text" id="stickyNote__Title">
+
+            <h3>具体的にいうと？</h3>
+            <textarea id="stickyNote__Text"></textarea>
+        </div><!-- /#stickyNote__inputText -->
 
 
+        <div class="memu__area">
 
-    <!-- テキストを入力した付箋を出力するエリア -->
-    <div id="stickyNote__container">
+            <div id="stickyNoteAdd">気づきを投稿する</div>
+            <div id="dataSave">気づきを保存する</div>
+            <div id="dataLoad">保存内容を呼び出す</div>
+            <div id="dataClear">保存内容を消去する</div>
 
+        </div>
 
-    </div><!-- /#stickyNote__container -->
+    </div><!-- /.container -->
 
-    <div id="stickyNote__dammy">
-
-
-    </div><!-- /#stickyNote__dammy -->
-
-    <!-- 付箋へのテキスト入力のボタン -->
-    <div id="stickyNote__input">
-        <h3>付箋のタイトル</h3>
-        <input type="text" id="stickyNote__Title">
-        <p>付箋の内容</p>
-        <textarea id="stickyNote__Text"></textarea>
-    </div><!-- /#stickyNote__inputText -->
-
-
-    <ul>
-        <li id="stickyNoteAdd">Add</li>
-        <li id="dataSave">Save</li>
-        <li id="dataLoad">Load</li>
-        <li id="dataClear">Clear</li>
-    </ul>
-    <p id="status">ステータス</p>
 
 
     <script>
@@ -55,9 +55,17 @@
         // ページのDOMツリーを読み込む
         $(document).ready(function () {
 
-            // ロードボタン隠す
-            $('#dataLoad').hide();
+            //  セーブボタンを非表示
+            $('#dataSave').hide();
+            //  クリアボタンを非表示
+            $('#dataClear').hide();
 
+            //  ローカルストレージにデータが保存されている場合はロードボタンを表示
+            if (localStorage.length > 0) {
+                $('#dataLoad').show();
+            } else {
+                $('#dataLoad').hide();
+            }
 
             // 入力したテキストを出力する
             $('#stickyNoteAdd').on('click', function () {
@@ -68,7 +76,7 @@
 
                 // タイトルと内容が空の場合は処理を中断
                 if (stickyNoteTitle === '' || stickyNoteText === '') {
-                    $('#status').html('タイトルと内容を入力してください');
+                    $('#status').html('気づきが未入力です');
                 }
                 else {
                     // stickyNoteTitleとstickyNoteTextをオブジェクトstickNoteDataに格納
@@ -78,66 +86,71 @@
                     };
                     // 付箋データを配列の最後に追加
                     stickyNotes.push(stickyNoteData)
-                    // console.dir(stickyNotes);
+
                     // 付箋のhtml要素を生成する関数
                     $('#stickyNote__container').append('<div class="stickyNote">' + '<h4>' + stickyNoteData.title + '</h4>' + '<p>' + stickyNoteData.text + '</p>' + '</div>').hide().fadeIn(1000);
                     // 付箋の追加後は入力したテキストをクリア
                     $('#stickyNote__Title').val('');
                     $('#stickyNote__Text').val('');
-                    $('#status').html('付箋を追加しました');
+                    $('#status').html('気づきを追加しました');
+                    console.log(stickyNotes.length);
+                }
+                // saveボタンを表示
+                if (stickyNotes.length > 0) {
+                    $('#dataSave').show();
+                    $('#dataLoad').hide();
                 }
 
-
-
-
             });
+
 
 
             // ローカルストレージに保存
             $('#dataSave').on('click', function () {
                 // 配列stickyNotesの要素数がiより大きい間は繰り返す
                 for (let i = 0; i < stickyNotes.length; i++) {
-                    // console.log(stickyNotes[i]);
-                    // console.log(stickyNotes.length);
-
                     const stickyNoteTitle = stickyNotes[i].title;
-                    // console.log(stickyNotes[0].title);
                     const stickyNoteText = stickyNotes[i].text;
-                    // console.log(stickyNotes[0].text);
                     // stickyNoteTitleとstickyNoteTextをオブジェクトstickNoteDataに格納
                     localStorage.setItem('title' + i, stickyNoteTitle);
                     localStorage.setItem('text' + i, stickyNoteText);
                 }
-                $('#status').html('データを保存しました');
-                // ロードボタン表示
-                $('#dataLoad').show();
+                $('#status').html('投稿データを保存しました');
+                $('#dataSave').hide();
+                $('#dataClear').show();
             });
 
-            // ローカルストレージのデータ削除
+
+
+
+
+
+            // データ削除TEST
             $('#dataClear').on('click', function () {
-                // 配列stickyNotesの要素数がiより大きい間は繰り返す
-                for (let i = 0; i < stickyNotes.length; i++) {
-                    // console.log(stickyNotes[i]);
 
-                    const stickyNoteTitle = stickyNotes[i].title;
-                    // console.log(stickyNotes[0].title);
-                    const stickyNoteText = stickyNotes[i].text;
-                    // console.log(stickyNotes[0].text);
-                    // stickyNoteTitleとstickyNoteTextをオブジェクトstickNoteDataに格納
-                    localStorage.removeItem('title' + i);
-                    localStorage.removeItem('text' + i);
+                //  データが保存されているかチェック
+                if (localStorage.length > 0) {
+
+                    // localStorageの要素数がiより大きい間は繰り返す
+                    for (let i = 0; i < localStorage.length; i++) {
+
+                        // stickyNoteTitleとstickyNoteTextをオブジェクトstickNoteDataに格納
+                        const text = localStorage.removeItem('title' + i);
+                        const text02 = localStorage.removeItem('text' + i);
+                    }
+
+                    $('#status').html('データを削除しました');
+                    $('.stickyNote').remove();
+                    $('#dataClear').hide();
+
                 }
-                // console.log(localStorage.title);
-                $('#stickyNote__Title').val('');
-                $('#stickyNote__Text').val('');
-                $('.stickyNote').remove();
-                $('#status').html('データを削除しました');
-
-
-
-
-                // // 付箋データの配列も空にする これ理解できていないので調査
+                else {
+                    $('#status').html('でーたないよ');
+                }
+                // //付箋データの配列も空にする これ理解できていないので調査
                 // stickyNotes.length = 0;
+
+
             });
 
 
@@ -150,15 +163,13 @@
 
                 //  データが保存されているかチェック
                 if (localStorage.length > 0) {
-                    $('#status').html('でーたあるよ');
+                    $('#status').html('データを復元しました');
 
-                    // 配列stickyNotesの要素数がiより大きい間は繰り返す
+                    // localStorageの要素数がiより大きい間は繰り返す
                     for (let i = 0; i < localStorage.length / 2; i++) {
 
-                        // 半分にする
-                        console.log(localStorage.length / 2);
+                        // console.log(localStorage.length / 2);
                         // console.log(localStorage[i]);
-
 
                         // stickyNoteTitleとstickyNoteTextをオブジェクトstickNoteDataに格納
                         const text = localStorage.getItem('title' + i);
@@ -166,15 +177,16 @@
 
 
                         $('#stickyNote__container').append('<div class="stickyNote">' + '<h4>' + text + '</h4>' + '<p>' + text02 + '</p>' + '</div>');
-                        // ロードボタン削除
-                        $('#dataLoad').remove();
+
 
                     }
-
+                    // ロードボタンを非表示
+                    $('#dataLoad').hide();
+                    $('#dataClear').show();
 
                 }
                 else {
-                    $('#status').html('でーたないよ');
+                    $('#status').html('データ内よありませんよー');
                 }
 
 
