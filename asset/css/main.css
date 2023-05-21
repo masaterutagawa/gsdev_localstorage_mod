@@ -86,6 +86,7 @@ body {
 /* memu__area */
 
 #stickyNoteAdd ,
+#stickyNoteDelete ,
 #dataLoad,
 #dataSave,
 #dataClear {
@@ -103,6 +104,7 @@ body {
 }
 
 #stickyNoteAdd:hover,
+#stickyNoteDelete:hover,
 #dataLoad:hover,
 #dataSave:hover,
 #dataClear:hover {
