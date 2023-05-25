@@ -12,7 +12,6 @@ const stickyNotes = [];
             // //  保存内容を消去するボタンを非表示
             // $('#dataClear').hide();
             
-
             //  ローカルストレージにデータが保存されている場合は保存内容を呼び出すボタンを表示
             if (localStorage.length > 0) {
                 $('#dataLoad').show();
@@ -22,13 +21,24 @@ const stickyNotes = [];
                 $('#dataClear').hide();
             }
 
+            console.log(localStorage.length);
+
+            // あ
+            const postDate = new Date();
+    
+
             // 入力したテキストを出力する
             $('#stickyNoteAdd').on('click', function () {
 
                 // 入力されたタイトルと内容を取得
                 const stickyNoteTitle = $('#stickyNote__Title').val();
                 const stickyNoteText = $('#stickyNote__Text').val();
-
+                // 投稿した日付を取得
+                const year =postDate.getFullYear();
+                const month =postDate.getMonth()+1;
+                const day = postDate.getDate();
+                const stickyNoteDate = `${year}年${month}月${day}日`;
+        
                 // タイトルと内容が空の場合は処理を中断
                 if (stickyNoteTitle === '' || stickyNoteText === '') {
                     $('#status').html('気づきが未入力です');
@@ -37,13 +47,14 @@ const stickyNotes = [];
                     // stickyNoteTitleとstickyNoteTextをオブジェクトstickNoteDataに格納
                     const stickyNoteData = {
                         title: stickyNoteTitle,
-                        text: stickyNoteText
+                        text: stickyNoteText,
+                        date: stickyNoteDate,
                     };
                     // 付箋データを配列の最後に追加
                     stickyNotes.push(stickyNoteData)
 
                     // 付箋のhtml要素を生成する関数
-                    $('#stickyNote__container').append('<div class="stickyNote">' + '<h4>' + stickyNoteData.title + '</h4>' + '<p>' + stickyNoteData.text + '</p>' + '</div>').hide().fadeIn(1000);
+                    $('#stickyNote__container').append('<div class="stickyNote">' + '<h4>' + stickyNoteData.title + '</h4>' + '<p>' + stickyNoteData.text + '</p>' + '<p class="postdate">' + `${year}年${month}月${day}日` + '</p>'+ '</div>').hide().fadeIn(1000);
                     // 付箋の追加後は入力したテキストをクリア
                     $('#stickyNote__Title').val('');
                     $('#stickyNote__Text').val('');
@@ -78,7 +89,7 @@ const stickyNotes = [];
                     // localStorageの要素数がiより大きい間は繰り返す
                     for (let i = 0; i < keys.length; i++) {
                         // もし、keyの値がtitleで始まるかtextで始まる場合localStorageに格納されているデータを削除
-                        if(keys[i].startsWith('title')||keys[i].startsWith('text')){
+                        if(keys[i].startsWith('title')||keys[i].startsWith('text')||keys[i].startsWith('date')){
                             localStorage.removeItem(keys[i]);
                         }
                     }
@@ -89,10 +100,12 @@ const stickyNotes = [];
 
                     const stickyNoteTitle = stickyNotes[i].title;
                     const stickyNoteText = stickyNotes[i].text;
-                    // stickyNoteTitleとstickyNoteTextをオブジェクトstickNoteDataに格納
-
+                    const stickyNoteDate = stickyNotes[i].date;
+                    
+                    // localStorageにデータを保存
                     localStorage.setItem('title' + i, stickyNoteTitle);
                     localStorage.setItem('text' + i, stickyNoteText);
+                    localStorage.setItem('date' + i, stickyNoteDate);
                     // console.log(localStorage);
                 }
                 $('#status').html('投稿した気づきを保存しました');
@@ -116,7 +129,7 @@ const stickyNotes = [];
                     // localStorageの要素数がiより大きい間は繰り返す
                     for (let i = 0; i < keys.length; i++) {
                         // もし、keyの値がtitleで始まるかtextで始まる場合localStorageに格納されているデータを削除
-                        if(keys[i].startsWith('title')||keys[i].startsWith('text')){
+                        if(keys[i].startsWith('title')||keys[i].startsWith('text')|keys[i].startsWith('date')){
                             localStorage.removeItem(keys[i]);
                         }
                     }
@@ -160,13 +173,14 @@ const stickyNotes = [];
                             // localStorageのデータを取得し、変数titleとtextに格納
                             const title = localStorage.getItem('title' + index);
                             const text = localStorage.getItem('text' + index);
+                            const date = localStorage.getItem('date' + index);
                             console.log(title);
-                            $('#stickyNote__container').append(`<div class="stickyNote"><h4>${title}</h4><p>${text}</p></div>`);
+                            $('#stickyNote__container').append(`<div class="stickyNote"><h4>${title}</h4><p>${text}</p><p class="postdate">${date}</p></div>`);
                         }
                     }
                     // ロードボタンを非表示
                     $('#dataLoad').hide();
-                    // データ削除ボタンを非表示
+                    // データ削除ボタンを表示
                     $('#dataClear').show();
                 }
                 else {
