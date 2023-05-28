@@ -11,6 +11,9 @@ const stickyNotes = [];
             $('#stickyNoteDelete').hide();
             // //  保存内容を消去するボタンを非表示
             // $('#dataClear').hide();
+
+
+
             
             //  ローカルストレージにデータが保存されている場合は保存内容を呼び出すボタンを表示
             if (localStorage.length > 0) {
@@ -21,12 +24,7 @@ const stickyNotes = [];
                 $('#dataClear').hide();
             }
 
-            console.log(localStorage.length);
-
-            // あ
-            const postDate = new Date();
-    
-
+ 
             // 入力したテキストを出力する
             $('#stickyNoteAdd').on('click', function () {
 
@@ -34,10 +32,14 @@ const stickyNotes = [];
                 const stickyNoteTitle = $('#stickyNote__Title').val();
                 const stickyNoteText = $('#stickyNote__Text').val();
                 // 投稿した日付を取得
+                const postDate = new Date();
                 const year =postDate.getFullYear();
                 const month =postDate.getMonth()+1;
                 const day = postDate.getDate();
                 const stickyNoteDate = `${year}年${month}月${day}日`;
+                // 付箋の座標
+                let x = 0;
+                let y = 0;
         
                 // タイトルと内容が空の場合は処理を中断
                 if (stickyNoteTitle === '' || stickyNoteText === '') {
@@ -54,12 +56,22 @@ const stickyNotes = [];
                     stickyNotes.push(stickyNoteData)
 
                     // 付箋のhtml要素を生成する関数
-                    $('#stickyNote__container').append('<div class="stickyNote">' + '<h4>' + stickyNoteData.title + '</h4>' + '<p>' + stickyNoteData.text + '</p>' + '<p class="postdate">' + `${year}年${month}月${day}日` + '</p>'+ '</div>').hide().fadeIn(1000);
+                    $('#stickyNote__container').append('<div class="stickyNote">' + '<h4>' + stickyNoteData.title + '</h4>' + '<p>' + stickyNoteData.text + '</p>' + '<p class="postdate">' + `${year}年${month}月${day}日` + '</p>' + '</div>').hide().fadeIn(1000);
                     // 付箋の追加後は入力したテキストをクリア
                     $('#stickyNote__Title').val('');
                     $('#stickyNote__Text').val('');
                     $('#status').html('気づきを追加しました');
                 }
+
+                //  付箋をドラッグさせる
+                $('.stickyNote').draggable({
+                    containment: '#stickyNote__container',
+                    stop:function(e, ui) { 
+                        console.log(ui.position.top +'と'+ ui.position.left);
+                        console.log(ui.offset.top+'と'+ui.offset.left);
+                        console.log(e);
+                    }
+                });
 
                 // 付箋が作成されたら実行
                 if (stickyNotes.length > 0) {
@@ -68,6 +80,7 @@ const stickyNotes = [];
                     // 削除ボタンを表示
                     $('#stickyNoteDelete').show();
                 }
+                
             });
 
             // 投稿した気づきを削除する
@@ -124,7 +137,6 @@ const stickyNotes = [];
 
                     // localStorageのキーを取得し、配列keyに格納
                     const keys = Object.keys(localStorage)
-                    console.dir(keys);
 
                     // localStorageの要素数がiより大きい間は繰り返す
                     for (let i = 0; i < keys.length; i++) {
@@ -178,6 +190,9 @@ const stickyNotes = [];
                             $('#stickyNote__container').append(`<div class="stickyNote"><h4>${title}</h4><p>${text}</p><p class="postdate">${date}</p></div>`);
                         }
                     }
+                    //  付箋をドラッグさせる
+                    $('.stickyNote').draggable({containment: '#stickyNote__container'});
+
                     // ロードボタンを非表示
                     $('#dataLoad').hide();
                     // データ削除ボタンを表示
